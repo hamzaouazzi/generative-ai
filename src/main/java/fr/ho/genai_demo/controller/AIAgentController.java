@@ -4,8 +4,13 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class AIAgentController {
@@ -20,7 +25,14 @@ public class AIAgentController {
 
     @GetMapping("/chat")
      public String askLLM(String query) {
+        List<Message> examples = List.of(
+                new UserMessage("10 * 8"),
+                new AssistantMessage("The result is : 80")
+        );
         return chatClient.prompt()
-                .user(query).call().content();
+                .system("Always respond in upper case")
+                .messages(examples)
+                .user(query)
+                .call().content();
      }
 }
